@@ -2,6 +2,8 @@ var probes = require('role.probe');
 
 module.exports = {
   run: function() {
+
+    // some glue code in case we have to clean up legacy stuff
     for (var creepKey in Game.creeps) {
       var creep = Game.creeps[creepKey];
 
