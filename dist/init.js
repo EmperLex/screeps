@@ -1,7 +1,10 @@
 var probes = require('role.probe');
+var util = require('util');
 
 module.exports = {
     run : function() {
-        probes.spawn();
+        if(util.creepCount() <= 3) {
+            probes.spawn();
+        }
     }
 };
