@@ -13,7 +13,7 @@ function harvest(creep) {
     // harvest or move to patch
     if (creep.harvest(mineralPatch) == ERR_NOT_IN_RANGE) {
       creep.moveTo(mineralPatch, {
-        reusePath: 0,
+        reusePath: 5,
         visualizePathStyle : {
             fill: 'transparent',
             stroke: '#f00',
@@ -42,7 +42,7 @@ function drop(creep) {
     if (_.sum(creep.carry) > 0) {
       if (creep.transfer(base, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         creep.moveTo(base, {
-          reusePath: 0,
+          reusePath: 5,
           visualizePathStyle : {
               fill: 'transparent',
               stroke: '#fff',
