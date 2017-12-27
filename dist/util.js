@@ -5,6 +5,10 @@ module.exports = {
     },
 
     mainSpawn : function() {
-        return Game.spawns['main_spawn'];
+        if(Game.spawns['main_spawn']) {
+          return Game.spawns['main_spawn'];
+        } else {
+          return Game.spawns['Spawn1'];
+        }
     }
 };
