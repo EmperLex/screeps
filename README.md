@@ -44,3 +44,6 @@ for every destination (2)
 end for
 
 This might be pretty resource hungry. We will see...
+
+Problems occured:
+- needed about 3h to find a problem with the PathFinder.search function. In the end the root cause was that the cost matrix i wanted to store in the Memory will lose its functions. Reading the matrix and passing it to the search function lead to strange error like "v.get is not a function". The solution is to serialize and deserialize the matrix to and from the Memory.
