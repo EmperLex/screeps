@@ -1,0 +1,32 @@
+{
+  "name": "emperlex_screeps.ai",
+  "version": "1.0.0",
+  "description": "AI for screeps",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "mocha tests/**/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EmperLex/screeps.git"
+  },
+  "keywords": [
+    "screeps",
+    "ai"
+  ],
+  "author": "Alexander Kaiser",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/EmperLex/screeps/issues"
+  },
+  "homepage": "https://github.com/EmperLex/screeps#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1",
+    "request": "^2.83.0",
+    "websocket": "^1.0.25"
+  }
+}

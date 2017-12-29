@@ -1,3 +1,7 @@
+# CUSTOM IGNORES
+tools/secret.pass
+
+
 # Logs
 logs
 *.log
@@ -56,4 +60,3 @@ typings/
 
 # dotenv environment variables file
 .env
-
