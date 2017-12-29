@@ -12,7 +12,7 @@ function harvest(creep) {
     var source = Game.getObjectById(creep.memory.source);
 
     var r = creep.withdraw(source, RESOURCE_ENERGY);
-    
+
     if (r == ERR_NOT_IN_RANGE) {
       creep.moveTo(source, {
         reusePath: 5,
@@ -37,7 +37,10 @@ function drop(creep) {
     var target = Game.getObjectById(creep.memory.target);
 
     if (_.sum(creep.carry) > 0) {
-      if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+
+      var r = creep.transfer(target, RESOURCE_ENERGY);
+      if ( r == ERR_NOT_IN_RANGE) {
+
         creep.moveTo(target, {
           reusePath: 5,
           visualizePathStyle : {
@@ -69,7 +72,7 @@ module.exports = {
     }
 
     return spawn.spawnCreep(
-        [WORK, MOVE, CARRY],
+        [MOVE, WORK, CARRY],
         ROLE_PROBE + "-" + Game.time.toString(),
         configuration
         );
