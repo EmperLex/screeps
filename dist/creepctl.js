@@ -1,7 +1,9 @@
 'use strict';
 
 var util = require('util');
-var probes = require('role.probe');
+var probe = require('role.probe');
+var upgrader = require('role.upgrader');
+
 
 module.exports.run = run;
 
@@ -30,6 +32,8 @@ function run() {
   } else {
     // ctrl loop
     spawn();
+    probe.run();
+    upgrader.run();
   }
 }
 
@@ -44,14 +48,21 @@ function spawn() {
     tmp[src]--;
   }
 
-  console.log(JSON.stringify(tmp));
-
   for (var src in tmp) {
     if(tmp[src] > 0) {
-      var result = probes.spawn(util.mainSpawn(), Game.getObjectById(src), util.mainSpawn());
-      if (result == ERR_NOT_ENOUGH_ENERGY) {
-        console.log("Not enough energy to spawn creep");
-        return;
+
+      var source = null;
+      var target = null;
+      var result = null;
+
+      if(Game.getObjectById(src).structureType == STRUCTURE_CONTROLLER) {
+        source = util.mainSpawn();
+        target = Game.getObjectById(src);
+        result = upgrader.spawn(util.mainSpawn(), source, target);
+      } else {
+        source = Game.getObjectById(src);
+        target = util.mainSpawn();
+        result = probe.spawn(util.mainSpawn(), source, target);
       }
 
       if (result == OK) {
@@ -68,9 +79,11 @@ function calcMaxPaths() {
       return; //nothing to do
     }
 
-    if(Memory.creepCtrl == undefined){
+    if(Memory.creepCtrl == undefined){ //init or reset
       Memory.creepCtrl = new Object();
       Memory.creepCtrl.maxPaths = new Object();
+      Memory.tmpCosts_initialized = false;
+      Memory.tmpGoals_initialized = false;
     }
 
     // init costmatrix
@@ -91,6 +104,13 @@ function calcMaxPaths() {
         });
         return { id: source.id, pos: source.pos, range: 1, baseCost: path.cost };
       });
+
+      goals.push( {
+        id: util.mainSpawn().room.controller.id,
+        pos: util.mainSpawn().room.controller.pos,
+        range: 1,
+        baseCost: 0 } );
+
       goals.sort(function(a,b) { return a.baseCost - b.baseCost });
 
       Memory.tmpGoals = goals;

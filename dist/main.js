@@ -9,8 +9,7 @@ var maintenance = require('maintenance');
 module.exports.loop = function() {
     // high prio tasks
     creepCtl.run();
-    probes.run();
-
+    
     // low prio tasks
     maintenance.run();
 }
