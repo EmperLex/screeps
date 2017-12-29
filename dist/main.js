@@ -1,18 +1,16 @@
 // EmperLex screeps AI
 // Dont try this at home
 
-var maintenance = require('maintenance');
-var patch = require('patch');
-var probes = require('role.probe');
 var creepCtl = require('creepctl');
+var probes = require('role.probe');
+var maintenance = require('maintenance');
 
 
 module.exports.loop = function() {
-    if(!creepCtl.initialized()) {
-      creepCtl.calcMaxPaths();
-    }
-
-    maintenance.run();
+    // high prio tasks
+    creepCtl.run();
     probes.run();
-    patch.run();
+
+    // low prio tasks
+    maintenance.run();
 }

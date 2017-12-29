@@ -8,11 +8,11 @@ function harvest(creep) {
   // gather energy
   // as long as we are not full
   if (creep.memory.state == STATE_GATHER && creep.carryCapacity > _.sum(creep.carry)) {
-    // find closest source patch
-    var mineralPatch = util.mainSpawn().pos.findClosestByRange(FIND_SOURCES);
-    // harvest or move to patch
-    if (creep.harvest(mineralPatch) == ERR_NOT_IN_RANGE) {
-      creep.moveTo(mineralPatch, {
+
+    var source = Game.getObjectById(creep.memory.source);
+
+    if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+      creep.moveTo(source, {
         reusePath: 5,
         visualizePathStyle : {
             fill: 'transparent',
@@ -31,17 +31,12 @@ function harvest(creep) {
 
 function drop(creep) {
   if (creep.memory.state == STATE_DROP) {
-    var base = null;
 
-    if (util.mainSpawn().energy >= util.mainSpawn().energyCapacity) {
-      base = creep.room.controller;
-    } else {
-      base = util.mainSpawn();
-    }
+    var target = Game.getObjectById(creep.memory.target);
 
     if (_.sum(creep.carry) > 0) {
-      if (creep.transfer(base, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(base, {
+      if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        creep.moveTo(target, {
           reusePath: 5,
           visualizePathStyle : {
               fill: 'transparent',
@@ -60,12 +55,22 @@ function drop(creep) {
 
 module.exports = {
 
-  spawn : function() {
-    var mainSpawn = util.mainSpawn();
-    return mainSpawn.spawnCreep(
+  spawn : function(spawn, source, target) {
+
+    var configuration = {
+      memory : {
+        role : ROLE_PROBE,
+        state : STATE_GATHER,
+        source : source.id,
+        target : target.id
+      }
+    }
+
+    return spawn.spawnCreep(
         [WORK, MOVE, CARRY],
         ROLE_PROBE + "-" + Game.time.toString(),
-        { memory : { role : ROLE_PROBE, state : STATE_GATHER}});
+        configuration
+        );
   },
 
   run: function() {
@@ -76,7 +81,5 @@ module.exports = {
         drop(creep);
       }
     }
-  },
-
-  ROLE_PROBE
+  }
 };

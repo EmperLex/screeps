@@ -1,9 +1,9 @@
 'use strict';
 
 var util = require('util');
+var probes = require('role.probe');
 
-module.exports.calcMaxPaths = calcMaxPaths;
-module.exports.initialized = initialized;
+module.exports.run = run;
 
 function initialized() {
   return Memory.creepCtrl_initialized;
@@ -24,6 +24,43 @@ function buildCostMatrix() {
   return costMatrix;
 }
 
+function run() {
+  if(!initialized()) {
+    calcMaxPaths();
+  } else {
+    // ctrl loop
+    spawn();
+  }
+}
+
+function spawn() {
+
+  //TODO return if spawn is busy
+
+  let tmp = Object.assign({}, Memory.creepCtrl.maxPaths);
+
+  for (var creepKey in Game.creeps) {
+    var src = Game.creeps[creepKey].memory.source;
+    tmp[src]--;
+  }
+
+  console.log(JSON.stringify(tmp));
+
+  for (var src in tmp) {
+    if(tmp[src] > 0) {
+      var result = probes.spawn(util.mainSpawn(), Game.getObjectById(src), util.mainSpawn());
+      if (result == ERR_NOT_ENOUGH_ENERGY) {
+        console.log("Not enough energy to spawn creep");
+        return;
+      }
+
+      if (result == OK) {
+        console.log("Spawned creep");
+        return;
+      }
+    }
+  }
+}
 
 function calcMaxPaths() {
 
@@ -33,6 +70,7 @@ function calcMaxPaths() {
 
     if(Memory.creepCtrl == undefined){
       Memory.creepCtrl = new Object();
+      Memory.creepCtrl.maxPaths = new Object();
     }
 
     // init costmatrix
@@ -45,7 +83,7 @@ function calcMaxPaths() {
     // init goals
     if (!Memory.tmpGoals_initialized) {
       let goals = _.map(util.mainSpawn().room.find(FIND_SOURCES), function(source) {
-        Memory.creepCtrl[source.id] = 0;
+        Memory.creepCtrl.maxPaths[source.id] = 0;
 
         let path = PathFinder.search(util.mainSpawn().pos, { pos : new RoomPosition(source.pos.x, source.pos.y, util.mainSpawn().room.name), range : 1}, {
           plainCost: 2,
@@ -99,7 +137,7 @@ function calcMaxPaths() {
           }
         }
         Memory.tmpCosts = costs.serialize();
-        Memory.creepCtrl[goal.id]++;
+        Memory.creepCtrl.maxPaths[goal.id]++;
       }
     }
 }
