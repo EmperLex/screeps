@@ -24,9 +24,8 @@ without the risk of deadlock (hopefully):
 create new temporary cost matrix
 find all destinations (spawns, romm controllers)
 
-for every destination (2)
-  for each energy patch (3)
-    for every mining position arround it (4)
+for every destination
+  for each energy patch
 
       find a path to it
 
@@ -39,7 +38,6 @@ for every destination (2)
         break
       endif    
 
-    end for
   end for
 end for
 
@@ -47,3 +45,8 @@ This might be pretty resource hungry. We will see...
 
 Problems occured:
 - needed about 3h to find a problem with the PathFinder.search function. In the end the root cause was that the cost matrix i wanted to store in the Memory will lose its functions. Reading the matrix and passing it to the search function lead to strange error like "v.get is not a function". The solution is to serialize and deserialize the matrix to and from the Memory.
+- there was a lot of fine tuning to do and the code got pretty messy. It probably would make sense to think about a good strict architecture to keep things clean.
+- solution works but does not feel very flexible
+
+### Phase 3 Clean up and follow a general architectural idea
+After reading some theory about finite state machines, hierarchical finite state machines and behaviour trees I decided to implement the AI behaviour as behaviour trees.
