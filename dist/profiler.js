@@ -1,3 +1,6 @@
+
+var logger = require('logger');
+
 module.exports = {
   time: function(label) {
     if(Memory.timers == undefined) {
@@ -9,10 +12,11 @@ module.exports = {
 
   timeEnd: function(label) {
     if(!Memory.timers[label]) {
-      console.log("No label found for timer " + label);
+      logger.log("No label found for timer " + label, logger.ERROR);
+      return;
     }
     var time = new Date().getTime() - Memory.timers[label];
-    console.log(label + " took " + time + " msecs");
+    logger.log(label + " took " + time + " msecs");
     delete Memory.timers[label];
   }
 }

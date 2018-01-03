@@ -49,4 +49,14 @@ Problems occured:
 - solution works but does not feel very flexible
 
 ### Phase 3 Clean up and follow a general architectural idea
-After reading some theory about finite state machines, hierarchical finite state machines and behaviour trees I decided to implement the AI behaviour as behaviour trees.
+After reading some theory about finite state machines, hierarchical finite state machines and behaviour trees I decided to implement the AI behaviour as behaviour trees. This was major design work.
+
+Resources I found useful:
+https://www.gamasutra.com/blogs/ChrisSimpson/20140717/221339/Behavior_trees_for_AI_How_they_work.php
+http://www.csc.kth.se/~miccol/Michele_Colledanchise/Publications_files/2013_ICRA_mcko.pdf
+http://blog.renatopp.com/2014/09/24/implementing-a-behavior-tree-part-1/
+
+Now the harvester (formerly probe) is now based on a simple behaviour tree:
+![alt text](harvester_bt.svg "Behaviour tree for the harvester")
+
+The creeps are still stupid as hell but the framework allows to adapt their behaviour much easier than before.
