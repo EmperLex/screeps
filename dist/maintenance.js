@@ -1,6 +1,5 @@
 'use strict';
 
-var probes = require('role.probe');
 var util = require('util');
 var profiler = require('profiler');
 
