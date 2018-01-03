@@ -1,12 +1,5 @@
 'use strict';
 
-<<<<<<< HEAD
-=======
-/*
-Inspired by http://www.csc.kth.se/~miccol/Michele_Colledanchise/Publications_files/2013_ICRA_mcko.pdf
-*/
-
->>>>>>> e05f9910095687656381805fc8214c842afd9df1
 var logger = require('logger');
 
 const FAILURE = 'FAILURE';
@@ -122,7 +115,7 @@ Selector.prototype.onExec = function(ctx) {
 
 function Inverter(id, node) {
   Node.call(this, id);
-  this.children.push(node);
+  this.children.push(node); 
 }
 
 Inverter.prototype = Object.create(Node.prototype);
