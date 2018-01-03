@@ -1,9 +1,10 @@
 'use strict';
 
-var util = require('util');
-var probe = require('role.probe');
-var upgrader = require('role.upgrader');
+var logger = require('logger');
 
+var util = require('util');
+var probe = require('role.harvester');
+var upgrader = require('role.upgrader');
 
 module.exports.run = run;
 
@@ -69,7 +70,7 @@ function spawn() {
       }
 
       if (result == OK) {
-        console.log("Spawned creep");
+        logger.log("Spawned creep");
         return;
       }
     }
@@ -130,7 +131,7 @@ function calcMaxPaths() {
       delete Memory.tmpCosts_initialized;
       Memory.creepCtrl_initialized = true; //done
 
-      console.log("Path control initialized");
+      logger.log("Path control initialized");
     } else {
 
       let spawn = util.mainSpawn();
