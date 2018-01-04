@@ -4,11 +4,10 @@ var BT = require('behaviourtree');
 
 module.exports = {
   InventoryFull,
-  MoveToTarget,
-  Harvest,
-  MoveToSource,
-  TransferEnergy,
-  MoveToSource
+  InventoryEmpty,
+  TakeResource,
+  HandOverResource,
+  MoveTo
 }
 
 // -- INVENTORY FULL CONDIION --
@@ -29,27 +28,45 @@ InventoryFull.prototype.onExec = function(ctx) {
   }
 }
 
-// -- REACHED TARGET CONDIION --
+// -- INVENTORY EMPTY CONDIION --
 
-function manhattanDistance(pos1, pos2) {
-  return Math.abs(pos1.x - pos2.x) + Math.abs(pos1.y - pos2.y);
+function InventoryEmpty(id) {
+  BT.Node.call(this, id);
 }
 
+InventoryEmpty.prototype = Object.create(BT.Node.prototype);
+
+InventoryEmpty.prototype.onExec = function(ctx) {
+  var creep = ctx.target;
+
+  console.log(_.sum(creep.carry) == 0);
+
+  if(_.sum(creep.carry) == 0) {
+      return BT.SUCCESS;
+  } else {
+    return BT.FAILURE;
+  }
+}
+
+
+// -- REACHED TARGET CONDIION --
 function targetReached(pos1, pos2) {
   return Math.abs(pos1.x - pos2.x) <= 1 && Math.abs(pos1.y - pos2.y) <= 1;
 }
 
-// -- MOVE TO TARGET ACTION --
+// -- MOVE TO ACTION --
 
-function MoveToTarget(id) {
+function MoveTo(id, destIdProvider) {
   BT.Node.call(this, id);
+
+  this.destIdProvider = destIdProvider;
 }
 
-MoveToTarget.prototype = Object.create(BT.Node.prototype);
+MoveTo.prototype = Object.create(BT.Node.prototype);
 
-MoveToTarget.prototype.onExec = function(ctx) {
+MoveTo.prototype.onExec = function(ctx) {
   var creep = ctx.target;
-  var target = Game.getObjectById(creep.memory.target);
+  var target = Game.getObjectById(this.destIdProvider(ctx));
 
   if(targetReached(creep.pos, target.pos)) {
     return BT.SUCCESS;
@@ -69,63 +86,40 @@ MoveToTarget.prototype.onExec = function(ctx) {
   return BT.RUNNING;
 }
 
-// -- HARVEST ACTION --
+// -- TAKE RESOURCE ACTION --
 
-function Harvest(id) {
+function TakeResource(id, resource) {
   BT.Node.call(this, id);
+  this.resource = resource;
 }
 
-Harvest.prototype = Object.create(BT.Node.prototype);
+TakeResource.prototype = Object.create(BT.Node.prototype);
 
-Harvest.prototype.onExec = function(ctx) {
+TakeResource.prototype.onExec = function(ctx) {
   var creep = ctx.target;
   var target = Game.getObjectById(creep.memory.source);
-  creep.harvest(target);
+
+  if(target.structureType === STRUCTURE_SPAWN) {
+    creep.withdraw(target, this.resource);
+  } else {
+    //not influenced by resource param - resource is determined by the target
+    creep.harvest(target);
+  }
   return BT.SUCCESS;
-}
-
-
-// -- MOVE TO SOURCE ACTION --
-
-function MoveToSource(id) {
-  BT.Node.call(this, id);
-}
-
-MoveToSource.prototype = Object.create(BT.Node.prototype);
-
-MoveToSource.prototype.onExec = function(ctx) {
-  var creep = ctx.target;
-  var target = Game.getObjectById(creep.memory.source);
-
-  if(targetReached(creep.pos, target.pos)) {
-    return BT.SUCCESS;
-  }
-
-  creep.moveTo(target, {
-    reusePath: 5,
-    visualizePathStyle : {
-        fill: 'transparent',
-        stroke: '#f00',
-        lineStyle: 'dashed',
-        strokeWidth: .15,
-        opacity: .1
-    }
-  });
-
-  return BT.RUNNING;
 }
 
 // -- TRANSFER ENERGY ACTION --
 
-function TransferEnergy(id) {
+function HandOverResource(id, resource) {
   BT.Node.call(this, id);
+  this.resource = resource;
 }
 
-TransferEnergy.prototype = Object.create(BT.Node.prototype);
+HandOverResource.prototype = Object.create(BT.Node.prototype);
 
-TransferEnergy.prototype.onExec = function(ctx) {
+HandOverResource.prototype.onExec = function(ctx) {
   var creep = ctx.target;
   var target = Game.getObjectById(creep.memory.target);
-  creep.transfer(target, RESOURCE_ENERGY);
+  creep.transfer(target, this.resource);
   return BT.SUCCESS;
 }

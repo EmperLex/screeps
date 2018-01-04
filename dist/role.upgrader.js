@@ -1,61 +1,25 @@
-var util = require('util')
+'use strict';
 
-let ROLE_PROBE = 'upgrader';
-let STATE_GATHER = 'gather';
-let STATE_DROP = 'drop';
+var util = require('util');
+var BT = require('behaviourtree');
+var BH = require('behaviours');
 
-function harvest(creep) {
-  // gather energy
-  // as long as we are not full
-  if (creep.memory.state == STATE_GATHER && creep.carryCapacity > _.sum(creep.carry)) {
+var ROLE_ID = 'upgrader';
 
-    var source = Game.getObjectById(creep.memory.source);
+function b_tree() {
+  //Conditions
+  var inventoryEmptyCondition = new BH.InventoryEmpty("(?) Inventory empty");
+  //Actions
+  var moveToTargetAction = new BH.MoveTo("(A) Move to target", (ctx) => ctx.target.memory.target);
+  var moveToSourceAction = new BH.MoveTo("(A) Move to source", (ctx) => ctx.target.memory.source);
+  var harvestAction = new BH.TakeResource("(A) Take resource");
+  var transferEnergyAction = new BH.HandOverResource("(A) Hand over energy");
+  //Composites
+  var harvestEnergySequence = new BT.Sequence("(SEQ) Havest energy sequence", [inventoryEmptyCondition, moveToSourceAction, harvestAction]);
+  var transferEnergySequence = new BT.Sequence("(SEQ) Tranfer energy sequence", [moveToTargetAction, transferEnergyAction]);
+  var harvestEnergySelector = new BT.Selector("(SEL) harvest energy selector", [harvestEnergySequence, transferEnergySequence]);
 
-    var r = creep.withdraw(source, RESOURCE_ENERGY);
-
-    if (r == ERR_NOT_IN_RANGE) {
-      creep.moveTo(source, {
-        reusePath: 5,
-        visualizePathStyle : {
-            fill: 'transparent',
-            stroke: '#f00',
-            lineStyle: 'dashed',
-            strokeWidth: .15,
-            opacity: .1
-        }
-      });
-    }
-  } else {
-    // if we are full -> switch to drop mode
-    creep.memory.state = STATE_DROP;
-  }
-}
-
-function drop(creep) {
-  if (creep.memory.state == STATE_DROP) {
-
-    var target = Game.getObjectById(creep.memory.target);
-
-    if (_.sum(creep.carry) > 0) {
-
-      var r = creep.transfer(target, RESOURCE_ENERGY);
-      if ( r == ERR_NOT_IN_RANGE) {
-
-        creep.moveTo(target, {
-          reusePath: 5,
-          visualizePathStyle : {
-              fill: 'transparent',
-              stroke: '#fff',
-              lineStyle: 'dashed',
-              strokeWidth: .15,
-              opacity: .1
-          }
-        });
-      }
-    } else {
-      creep.memory.state = STATE_GATHER;
-    }
-  }
+  return new BT.BehaviourTree(harvestEnergySelector);
 }
 
 module.exports = {
@@ -64,16 +28,15 @@ module.exports = {
 
     var configuration = {
       memory : {
-        role : ROLE_PROBE,
-        state : STATE_GATHER,
+        role : ROLE_ID,
         source : source.id,
         target : target.id
       }
     }
 
     return spawn.spawnCreep(
-        [MOVE, WORK, CARRY],
-        ROLE_PROBE + "-" + Game.time.toString(),
+        [WORK, MOVE, CARRY],
+        ROLE_ID + "-" + Game.time.toString(),
         configuration
         );
   },
@@ -81,9 +44,8 @@ module.exports = {
   run: function() {
     for (var creepKey in Game.creeps) {
       var creep = Game.creeps[creepKey];
-      if (creep.memory.role == ROLE_PROBE) {
-        harvest(creep);
-        drop(creep);
+      if (creep.memory.role == ROLE_ID) {
+        b_tree().tick(creep);
       }
     }
   }

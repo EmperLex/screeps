@@ -10,10 +10,10 @@ function b_tree() {
   //Conditions
   var inventoryFullCondition = new BH.InventoryFull("(?) Inventory full");
   //Actions
-  var moveToTargetAction = new BH.MoveToTarget("(A) Move to target");
-  var moveToSourceAction = new BH.MoveToSource("(A) Move to source");
-  var harvestAction = new BH.Harvest("(A) Harvest");
-  var transferEnergyAction = new BH.TransferEnergy("(A) Transfer energy");
+  var moveToTargetAction = new BH.MoveTo("(A) Move to target", (ctx) => ctx.target.memory.target);
+  var moveToSourceAction = new BH.MoveTo("(A) Move to source", (ctx) => ctx.target.memory.source);
+  var harvestAction = new BH.TakeResource("(A) Take resource", RESOURCE_ENERGY);
+  var transferEnergyAction = new BH.HandOverResource("(A) Hand over energy", RESOURCE_ENERGY);
   //Decorators
   var inventoryFullInverter = new BT.Inverter("(D) Inventory full inverter", inventoryFullCondition);
   //Composites

@@ -60,3 +60,40 @@ Now the harvester (formerly probe) is now based on a simple behaviour tree:
 ![alt text](harvester_bt.svg "Behaviour tree for the harvester")
 
 The creeps are still stupid as hell but the framework allows to adapt their behaviour much easier than before.
+
+### Phase 4 Port behaviour tree to upgrader
+The next goal is to do the same with the upgrade creep. Since the logic is nearly the same with the exception
+of some APIs calls because of the different types of structures involved I want to generalize the behaviours that much
+so that both roles can be handled with a very similar tree configuration and as less behaviour subclasses as possible.
+
+For this the behaviours got generalized and can now be parametrized. E.g. instead of a having a MoveToSource-behaviour
+there now is a MoveTo behaviour were the target id can be determined by a passed callback function.
+
+![alt text](harvester_bt_2.svg "Enhanced behaviour tree for the harvester")
+
+There is just one little detail why this tree cannot be used for the upgrader creep. When harvesting energy we do
+
+```
+while(inventory not full) {
+  harvest from energy source // requires multiple ticks
+}
+hand over to spawn // takes one tick
+```
+
+For the upgrader we have ...
+
+```
+while(inventory not full) {
+  take energy from spawn // requires one tick
+}
+hand over to controller // takes multiple ticks
+```
+
+This is very inefficient because
+ - we go to the spawn and fill the inventory
+ - then go to the controller and transfer one energy to it
+ - which leads to "inventory not full" condition
+
+and so we just transfer one energy each turn. A minor adapted tree solves the problem:
+
+![alt text](upgrader_bt.svg "Enhanced behaviour tree for the harvester")
