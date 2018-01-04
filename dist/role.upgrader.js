@@ -10,7 +10,7 @@ function b_tree() {
   //Conditions
   var inventoryEmptyCondition = new BH.InventoryEmpty("(?) Inventory empty");
   //Actions
-  var moveToTargetAction = new BH.MoveTo("(A) Move to target", (ctx) => ctx.target.memory.target);
+  var moveToTargetAction = new BH.MoveTo("(A) Move to target", (ctx) => ctx.target.memory.target, 3);
   var moveToSourceAction = new BH.MoveTo("(A) Move to source", (ctx) => ctx.target.memory.source);
   var harvestAction = new BH.TakeResource("(A) Take resource", RESOURCE_ENERGY);
   var transferEnergyAction = new BH.HandOverResource("(A) Hand over energy", RESOURCE_ENERGY);

@@ -97,3 +97,9 @@ This is very inefficient because
 and so we just transfer one energy each turn. A minor adapted tree solves the problem:
 
 ![alt text](upgrader_bt.svg "Enhanced behaviour tree for the harvester")
+
+Other notable issues:
+- found out that transfer and updateController can both update the controller but I am not sure wether the
+bonuses of updateController() will be applied to transfer as well.
+- room controllers can be upgraded with a range of 3. MoveTo now takes a range param which defines
+when a goal is reached. This will further improve the upgrader efficiency.
