@@ -12,8 +12,8 @@ function b_tree() {
   //Actions
   var moveToTargetAction = new BH.MoveTo("(A) Move to target", (ctx) => ctx.target.memory.target);
   var moveToSourceAction = new BH.MoveTo("(A) Move to source", (ctx) => ctx.target.memory.source);
-  var harvestAction = new BH.TakeResource("(A) Take resource");
-  var transferEnergyAction = new BH.HandOverResource("(A) Hand over energy");
+  var harvestAction = new BH.TakeResource("(A) Take resource", RESOURCE_ENERGY);
+  var transferEnergyAction = new BH.HandOverResource("(A) Hand over energy", RESOURCE_ENERGY);
   //Composites
   var harvestEnergySequence = new BT.Sequence("(SEQ) Havest energy sequence", [inventoryEmptyCondition, moveToSourceAction, harvestAction]);
   var transferEnergySequence = new BT.Sequence("(SEQ) Tranfer energy sequence", [moveToTargetAction, transferEnergyAction]);
