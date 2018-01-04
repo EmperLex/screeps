@@ -39,8 +39,6 @@ InventoryEmpty.prototype = Object.create(BT.Node.prototype);
 InventoryEmpty.prototype.onExec = function(ctx) {
   var creep = ctx.target;
 
-  console.log(_.sum(creep.carry) == 0);
-
   if(_.sum(creep.carry) == 0) {
       return BT.SUCCESS;
   } else {
